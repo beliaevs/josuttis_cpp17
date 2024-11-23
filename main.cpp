@@ -36,6 +36,11 @@ void strange(Ts... ts, Us... us)
 	std::cout << "\n";
 }
 
+// odd2 is ill-formed: Us is always empty
+//template<typename... Ts, typename... Us, typename... Vs>
+//void odd3(Ts... ts, Us... us, Vs... vs)
+//{}
+
 int main()
 {
 	printSpaced(12, 3.456, "sasha");
