@@ -1,6 +1,10 @@
 #include<iostream>
+#include<list>
+#include<map>
+#include<ranges>
 #include<string>
 #include<variant>
+#include<vector>
 
 template<auto sep = ' ', typename First, typename... Types>
 void printSpaced(const First& arg, const Types&... args)
@@ -58,6 +62,56 @@ void expansion(Ts... xs)
 //template<typename...Ts, typename T>
 //void f() {}
 
+//concepts: c++20
+void myprint(const std::ranges::input_range auto& cont)
+{
+	for (const auto& el : cont)
+	{
+		std::cout << el << " ";
+	}
+	std::cout << "\n";
+}
+
+void ranges_test()
+{
+	std::vector<int> vec{ 1, 3, 2, 4, 3, 5, 4, 6 };
+	std::list<int> l{ 2, 4, 3, 6, 4, 7, 6, 9, 10 };
+	myprint(vec);
+	myprint(l);
+	// views: c++20
+	myprint(std::views::take(vec, 3));
+	myprint(l | std::views::take(3));
+	myprint(vec | std::views::take(4)
+		| std::views::transform([](auto v) {
+			return std::to_string(v) + 's';
+			}));
+	// zip_view: c++23
+	for (auto [idx, el] : std::ranges::zip_view(std::views::iota(1), vec))
+	{
+		std::cout << idx << ": " << el << "\n";
+	}
+}
+
+void more_advanced()
+{
+	std::map<std::string, int> composers{
+		{"Bach", 1685},
+		{"Mozart", 1756},
+		{"Beethoven", 1770},
+		{"Tchaikovsky", 1840},
+		{"Chopin", 1810},
+		{"Vivaldi", 1678}
+	};
+	namespace vws = std::views;
+	for (const auto& elem : composers
+		| vws::filter([](const auto& v) { return v.second > 1700; })
+		| vws::take(3)
+		| vws::keys)
+	{
+		std::cout << "-" << elem << "\n";
+	}
+}
+
 int main()
 {
 	printSpaced(12, 3.456, "sasha");
@@ -103,6 +157,11 @@ int main()
 		std::variant<std::monostate, S1, S2> s;
 		s.emplace<2>();
 		s = S1();
+	}
+	{
+		// josuttis on ranges c++20
+		ranges_test();
+		more_advanced();
 	}
 	return 0;
 }
